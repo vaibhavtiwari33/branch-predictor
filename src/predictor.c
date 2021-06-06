@@ -91,7 +91,8 @@ init_predictor()
   }
 }
 
-unsigned int gshare_prediction(uint32_t pc) {
+uint8_t 
+gshare_prediction(uint32_t pc) {
   //XOR the program counter with global history and only keep ghistory amount of bits
   gshare_BHT_index = (pc ^ global_history) & ((1 << ghistoryBits) - 1);
 
@@ -106,7 +107,8 @@ unsigned int gshare_prediction(uint32_t pc) {
 }
 
 
-uint8_t tournament_prediction(uint32_t pc) {
+uint8_t 
+tournament_prediction(uint32_t pc) {
   PHT_index = pc & ((1 << pcIndexBits) - 1);
   
   uint8_t local_prediction = local_BHT[local_PHT[PHT_index]];
