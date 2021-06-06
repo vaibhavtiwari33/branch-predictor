@@ -11,9 +11,9 @@
 //
 // TODO:Student Information
 //
-const char *studentName = "NAME";
-const char *studentID   = "PID";
-const char *email       = "EMAIL";
+const char *studentName = "Vaibhav Kant Tiwari";
+const char *studentID   = "A59005342";
+const char *email       = "vktiwari@ucsd.edu";
 
 //------------------------------------//
 //      Predictor Configuration       //
@@ -37,6 +37,12 @@ int verbose;
 //TODO: Add your own Branch Predictor data structures here
 //
 
+//gshare:BHT, history
+uint32_t *gshare_BHT;  // gshare branch history table
+uint32_t global_history;  //global history
+int gshare_BHT_index;
+uint32_t gshare_result;
+
 
 //------------------------------------//
 //        Predictor Functions         //
@@ -50,6 +56,20 @@ init_predictor()
   //
   //TODO: Initialize Branch Predictor Data Structures
   //
+
+  switch (bpType) {
+    case STATIC:
+      return TAKEN;
+    case GSHARE:
+      global_history = 0;
+      gshare_BHT = malloc((1<<ghistoryBits)*sizeof(uint32_t));
+      memset(gshare_BHT, WN, sizeof(uint32_t)*(1<<ghistoryBits));
+      break;
+    case TOURNAMENT:
+    case CUSTOM:
+    default:
+      break;
+  }
 }
 
 // Make a prediction for conditional branch instruction at PC 'pc'
@@ -59,24 +79,52 @@ init_predictor()
 uint8_t
 make_prediction(uint32_t pc)
 {
-  //
-  //TODO: Implement prediction scheme
-  //
 
-  // Make a prediction based on the bpType
+  // Make a prediction based on the bpType (Branch Predictor type)
   switch (bpType) {
     case STATIC:
       return TAKEN;
     case GSHARE:
+      //XOR the program counter with global history and only keep ghistory amount of bits
+      gshare_BHT_index = (pc ^ global_history) & ((1 << ghistoryBits) - 1);
+
+      if (gshare_BHT[gshare_BHT_index] == WN || gshare_BHT[gshare_BHT_index] == SN) {
+        gshare_result = NOTTAKEN;
+      }
+      else {
+        gshare_result = TAKEN;
+      }
+      
+      return gshare_result;
     case TOURNAMENT:
     case CUSTOM:
     default:
       break;
   }
 
-  // If there is not a compatable bpType then return NOTTAKEN
+  // If there is no compatable bpType then return NOTTAKEN
   return NOTTAKEN;
 }
+
+// Train gShare predictor
+void 
+train_gshare(uint32_t pc, uint8_t outcome) {
+    int BHTindex = (pc ^ global_history) & ((1 << ghistoryBits) - 1);
+
+    // If the outcome was NOTTAKEN and the predictor hasn't saturated to SN (strongly not taken)
+    if (outcome == NOTTAKEN && gshare_BHT[BHTindex] != SN) {
+        gshare_BHT[BHTindex]--;
+    } 
+    // If the outcome was TAKEN and the predictor hasn't saturated to ST (strongly taken)
+    else if (outcome == TAKEN && gshare_BHT[BHTindex] != ST) {
+        gshare_BHT[BHTindex]++;
+    } 
+
+    global_history <<= 1;                           //Right shift global history
+    global_history  &= ((1 << ghistoryBits) - 1);   //Only keep ghistoryBits amount of history
+    global_history |= outcome;                       //Fill the new last bit of global history with outcome
+}
+
 
 // Train the predictor the last executed branch at PC 'pc' and with
 // outcome 'outcome' (true indicates that the branch was taken, false
@@ -85,7 +133,19 @@ make_prediction(uint32_t pc)
 void
 train_predictor(uint32_t pc, uint8_t outcome)
 {
-  //
-  //TODO: Implement Predictor training
-  //
+  switch (bpType) {
+    case STATIC:
+      return;
+    case GSHARE:
+      train_gshare(pc, outcome);
+      break;
+    case TOURNAMENT:
+      //tournament_update(pc, outcome);
+      break;
+    case CUSTOM:
+      //per_train(pc, outcome);
+      break;
+    default:
+      break;
+    }
 }
