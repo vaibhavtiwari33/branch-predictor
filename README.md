@@ -1,4 +1,4 @@
-# CSE240A Branch Predictor Project
+# Branch Predictor Project
 
 ## Table of Contents
   * [Introduction](#introduction)
