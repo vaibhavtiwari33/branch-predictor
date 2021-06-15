@@ -6,15 +6,12 @@
   * [Get started](#get-started)
   * [Working with Docker](#working-with-docker)
   * [Traces](#traces)
-  * [Running your predictor](#running-your-predictor)
+  * [Running the predictor](#running-your-predictor)
   * [Implementing the predictors](#implementing-the-predictors)
     - [Gshare](#gshare)
     - [Tournament](#tournament)
     - [Custom](#custom)
     - [Things to note](#things-to-note)
-  * [Grading](#grading)
-    - [Grading the custom predictor](#grading-the-custom-predictor)
-  * [Turn-in Instructions](#turn-in-instructions)
 
 ## Introduction
 
@@ -94,7 +91,7 @@ Sample Trace from int_1:
 We provide test traces to you to aid in testing your project but we strongly suggest that you create your own custom traces to use for debugging.
 
 
-## Running your predictor
+## Running predictors
 
 In order to build your predictor you simply need to run `make` in the src/ directory of the project.  You can then run the program on an uncompressed trace as follows:   
 
@@ -183,41 +180,3 @@ They should also have the following state transitions:
 ```
 
 The Choice Predictor used to select which predictor to use in the Alpha 21264 Tournament predictor should be initialized to Weakly select the Global Predictor.
-
-## Grading
-
-All grading will be done with respect to your predictor's Misprediciton Rate, as well as its correctness (for Gshare and Tournament) compared to our implementation.
-
-You get 10 points for correctness of the gshare and tournament predictors (20 points max grade for correctness). If your predictions match the correct output, you get full points. You get 15 points if your custom predictor beats one of the other two (gshare and tournament), and +15 points (30 total) if you beat both of them.
-
-Finally, the 6 best custom predictors (in terms of misprediction rate), will receive extra points. First place gets 6 points, second place gets 5, third gets 4 and so on. **The maximum grade is 56. If your custom predictor does not rank in the top 6, the maximum score you can get is 50/56.**
-
-If you are ranked in the top 6, we need a clear description (in comments in your code) of the number of bits you are using. For example, write something like: I implemented **[X]** as my custom predictor. **[Brief description of how it works]**. This predictor uses two structures. The first one is **[variable name in code]** and the second is **[variable name]**. Then for each structure present the math to calculate its size. We will verify its correctness before you receive the bonus points. Adjust the above text as necessary.
-
-You should do most of your development on your own machine. If you face any issues when you submit your project in gradescope, try to run your project in our Docker image to ensure compatibility with the autograder, or post the error message in Piazza.
-
-#### Grading the custom predictor
-
-We will be comparing your custom predictor against a Gshare predictor with 13 bits of global history (--global:13), which is the largest possible Gshare that fits the 16kb budget. We will also be comparing it against a Tournament predictor of about 14kb. This predictor uses 9 bits of global history, 10 bits of local history and 10 PC bits (--tournamet:9:10:10). These are the two predictors you have to outperform.
-
-For each predictor (gshare:13, tournament:9:10:10 and your custom predictor), we will calculate the average missprediction rate accross all 12 of our traces. Out of those 12, six are visible to you and provided along with the starter code to use during development. The remaining six will remain hidden. Your predictor's average missprediction rate must be better (lower) than the other two to get all the points (minus the bonus points for top ranked predictors).
-
-## Turn-in instructions
-
-**DUE: Nov 12 2019 - Submissions after 11:59:59 PM are considered late**
-
- A project is considered late at 12:00:01 AM (Which is 1 second past Midnight).
-
-To submit your project, compress the 'src' folder in a **.zip** (not .rar) file and upload it in gradescope. Select only the source files required for compilation and nothing else (binaries, traces etc should not be submitted). This will trigger our autograder to begin grading. You are allowed to submit multiple times.
-
-Gradescope has a time limit for autograders. Make sure that your code does not do anything unnecessary. For comparison purposes, we will announce our implementation's running time as soon as we optimize it.
-
-Our autograder runs two sets of tests:
-
-We first ensure that your code is compatible with our autograder. If your code fails any of these tests, you will be notified immediately, so don't leave the screen before you see the grading outcome. Specifically, this set of tests checks that:
-  - `make` produces an executable named `predictor`
-  - The output produced by your executable has the expected format
-
-Once you pass the compatibility test, we grade the output produced by your code. You will be able to see your score on some of our test cases, but some will be hidden. Your overall grade will not be visible until after the project's due date.
-
-**Note:** Gradescope expects pass/fail tests but we will be reporting percentages. If you don't score 100%, Gradescope considers it a failed tests. Do not be concerned when you see failed tests (but be concerned if your score is low and re-submit)
