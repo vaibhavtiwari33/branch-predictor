@@ -1,4 +1,4 @@
-# Branch Predictor Project
+# Branch Predictor
 
 ## Table of Contents
   * [Introduction](#introduction)
